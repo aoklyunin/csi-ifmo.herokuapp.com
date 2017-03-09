@@ -6,10 +6,10 @@ from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
-from plan.forms import RegisterForm, LoginForm
+from olymp.forms import RegisterForm, LoginForm
+from olymp.models import Expert
 
 
-# метод регистрации
 def register(request):
     # если post запрос
     if request.method == 'POST':
@@ -17,62 +17,63 @@ def register(request):
         form = RegisterForm(request.POST)
         # если форма заполнена корректно
         if form.is_valid():
+            data = {'username': form.cleaned_data["username"],
+                    'patronymic': form.cleaned_data["patronymic"],
+                    'mail': form.cleaned_data["mail"],
+                    'name': form.cleaned_data["name"],
+                    'second_name': form.cleaned_data["second_name"],
+                    'university': form.cleaned_data["university"],
+                    }
             # проверяем, что пароли совпадают
             if form.cleaned_data["password"] != form.cleaned_data["rep_password"]:
                 # выводим сообщение и перезаполняем форму
                 messages.error(request, "пароли не совпадают")
-                data = {'username': form.cleaned_data["username"],
-
-                        'mail': form.cleaned_data["mail"],
-                        'name': form.cleaned_data["name"],
-                        'second_name': form.cleaned_data["second_name"],
-                        }
                 # перерисовываем окно
-                return render(request, "plan/register.html", {
+                return render(request, "olymp/register.html", {
                     'form': RegisterForm(initial=data),
-                    'ins_form': LoginForm()
+                    'login_form': LoginForm()
+                })
+                # проверяем, что пароли совпадают
+            if form.cleaned_data["code"] != "qwe123QWE":
+                # выводим сообщение и перезаполняем форму
+                messages.error(request, "Неверный код доступа")
+                # перерисовываем окно
+                return render(request, "olymp/register.html", {
+                    'form': RegisterForm(initial=data),
+                    'login_form': LoginForm()
                 })
             else:
-                # получаем данные из формы
-                musername = form.cleaned_data["username"]
-
-                mmail = form.cleaned_data["mail"]
-                name = form.cleaned_data["name"]
-                second_name = form.cleaned_data["second_name"]
-                mpassword = form.cleaned_data["password"]
                 try:
                     # создаём пользователя
-                    user = User.objects.create_user(username=musername,
-                                                    email=mmail,
-                                                    password=mpassword)
-                    # если получилось создать пользователя
-                    if user:
-                        # задаём ему имя и фамилию
-                        user.first_name = name
-                        user.last_name = second_name
-                        # созраняем пользователя
-                        user.save()
-                    return HttpResponseRedirect("/")
+                    user = User.objects.create_user(username=form.cleaned_data["username"],
+                                                    email=form.cleaned_data["mail"],
+                                                    password=form.cleaned_data["password"])
                 except:
-                    # если не получилось создать пользователя, то выводим сообщение
                     messages.error(request, "Такой пользователь уже есть")
-                    # заполняем дату формы
-                    data = {'username': form.cleaned_data["username"],
-                            'mail': form.cleaned_data["mail"],
-                            'name': form.cleaned_data["name"],
-                            'second_name': form.cleaned_data["second_name"],
-                            }
-                    # рисуем окно регистрации
-                    return render(request, "plan/register.html", {
+                    return render(request, "olymp/register.html", {
                         'form': RegisterForm(initial=data),
-                        'ins_form': LoginForm()
+                        'login_form': LoginForm()
                     })
+
+                # задаём ему имя и фамилию
+                user.first_name = form.cleaned_data["name"]
+                user.last_name = form.cleaned_data["second_name"]
+                # созраняем пользователя
+                user.save()
+
+                # создаём студента
+                w = Expert.objects.create(user=user, patronymic=form.cleaned_data["patronymic"],
+                                          university=form.cleaned_data["university"])
+
+                # сохраняем эксперта
+                w.save()
+                return HttpResponseRedirect("/")
         else:
             # перезагружаем страницу
             return HttpResponseRedirect("/")
     else:
         # возвращаем простое окно регистрации
-        return render(request, "plan/register.html", {
+        return render(request, "olymp/register.html", {
             'form': RegisterForm(),
             'login_form': LoginForm()
         })
@@ -81,7 +82,7 @@ def register(request):
 # выход из системы
 def logout_view(request):
     logout(request)
-    return HttpResponseRedirect("../../../../")
+    return HttpResponseRedirect("/")
 
 
 # стартовая страница
@@ -103,7 +104,7 @@ def index(request):
                 messages.success(request, "успешный вход")
             else:
                 messages.error(request, "пара логин-пароль не найдена")
-    template = 'plan/index.html'
+    template = 'olymp/index.html'
     context = {
         "user": request.user,
         "login_form": LoginForm(),

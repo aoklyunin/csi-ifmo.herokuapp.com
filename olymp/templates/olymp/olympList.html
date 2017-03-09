@@ -1,0 +1,64 @@
+{% extends "olymp/base.html" %}
+{# Load the tag library #}
+{% load bootstrap3 %}
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+
+
+{% block title %}НПО Поиск{% endblock %}
+
+{% block content %}
+   <h1>Олимпиады</h1>
+    {% if user.is_authenticated == False %}
+        <p>Для доступа к системе Вам надо войти или зарегистрироваться</p>
+    {% else %}
+
+    {% endif %}
+{% endblock %}
+
+
+{% block sub_content %}
+
+{% if user.is_authenticated == False %}
+
+    {% else %}
+
+<br>
+<br>
+<form method="post">
+     {% csrf_token %}
+     <h3>Добавление Олимпиады</h3>
+<table>
+
+    <tr>
+        <td> {%  bootstrap_field form.name %}</td>
+    </tr>
+</table>
+
+    <input align="center" class="btn btn-primary" type="submit" value="Добавить" class="button"/>
+</form>
+
+<br>
+<br>
+<table cellpadding="10" align="center" width="60%">
+  {% for eq in eqs%}
+    <tr>
+        <td>{{ eq.name}}</td>
+        <td><a href="/olymp/detail/{{ eq.id }}/" class="btn btn-default">Редактировать</a>
+       </td>
+        <td></td>
+    </tr>
+    {% endfor %}
+</table>
+
+    {% endif %}
+
+
+{% endblock %}
+
+

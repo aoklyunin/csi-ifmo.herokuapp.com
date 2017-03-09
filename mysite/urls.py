@@ -3,19 +3,24 @@
 from django.conf.urls import include, url
 from django.contrib import admin
 
-import plan.views
-import plan.auth
+import olymp.views
+import olymp.auth
 
-# автоопределение администратора
+
 admin.autodiscover()
 
 urlpatterns = [
     # панель администратора
     url(r'^admin/', include(admin.site.urls)),
     # выход из сайта
-    url(r'^logout/$', plan.auth.logout_view),
+    url(r'^logout/$', olymp.auth.logout_view),
     # регистрация на сайте
-    url(r'^register/$', plan.auth.register),
-    url(r'^', plan.auth.index, name='index'),
-    url(r'^generateWorkReport/(?P<work_report_id>[0-9]+)/$', plan.views.generateWorkReport, name='index'),
+    url(r'^register/$', olymp.auth.register),
+    url(r'^olymp/list/$', olymp.views.olympList),
+    url(r'^olymp/detail/(?P<olymp_id>[0-9]+)/$', olymp.views.olympDetail),
+    url(r'^problem/list/$', olymp.views.problemList),
+    url(r'^problem/detail/(?P<problem_id>[0-9]+)/$', olymp.views.problemDetail),
+    url(r'^problem/delete/(?P<problem_id>[0-9]+)/$', olymp.views.problemDelete),
+    url(r'^', olymp.auth.index, name='index'),
+
 ]

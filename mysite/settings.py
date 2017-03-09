@@ -38,8 +38,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'plan',
-    'bootstrap3'
+    'olymp',
+    'bootstrap3',
+    'crispy_forms'
 )
 
 from django.contrib.messages import constants as messages
@@ -62,6 +63,8 @@ MIDDLEWARE_CLASSES = (
 )
 
 ROOT_URLCONF = 'mysite.urls'
+
+MEDIA_ROOT = 'media'
 
 TEMPLATES = [
     {
@@ -86,7 +89,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
-    'default':dj_database_url.config(default='postgres://nsjvtsghcwqoqe:6b23dbb5cc8eac7aa2b19e0053deb4800853905aefb251fa76037b6093645fa1@ec2-54-75-235-2.eu-west-1.compute.amazonaws.com:5432/d5ogimdktam431')
+    'default':dj_database_url.config(default='postgres://eqnaukzggnfvpk:91b31471f3a35012f93e41cc8a5357826acef1ae0585ac05ee31cc945df4b12d@ec2-54-217-212-8.eu-west-1.compute.amazonaws.com:5432/d8262stcpgs34e')
 }
 
 # Password validation
