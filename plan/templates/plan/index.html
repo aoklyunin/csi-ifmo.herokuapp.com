@@ -1,0 +1,29 @@
+{% extends "plan/base.html" %}
+{# Load the tag library #}
+{% load bootstrap3 %}
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+
+
+{% block title %}Информатика{% endblock %}
+
+{% block content %}
+   <h1>Добро пожаловать</h1>
+    {% if user.is_authenticated == False %}
+        <p>Для доступа к системе Вам надо войти или зарегистрироваться</p>
+    {% else %}
+        <p>Если Вы доделали задание, Вам надо добавить попытку в личном кабиненте</p>
+        <p><a class="btn btn-primary btn-lg" role="button" href="personal\">Личный кабинет »</a></p>
+        {% if user.is_staff %}
+            <p><a class="btn btn-success btn-lg" role="button" href="attemptList\">Список попыток»</a></p>
+            <p><a class="btn btn-success btn-lg" role="button" href="addTask\">Добавить задание»</a>
+            <a class="btn btn-success btn-lg" role="button" href="..\..\marks\">Оценки»</a></p>
+        {%  endif %}
+    {% endif %}
+{% endblock %}
+
