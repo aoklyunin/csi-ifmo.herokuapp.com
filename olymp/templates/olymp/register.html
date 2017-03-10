@@ -18,9 +18,13 @@
 {% endblock %}
 
 {% block content %}
+<H1> Регистрация </H1>
+
+{% endblock %}
+{% block sub_content %}
     <form method="post" action="." class="register_form">
-            {% csrf_token %}
-            <br><br>
+        {% csrf_token %}
+        {{ form.management_form }}
         <table>
             <tr>
             <td>
@@ -39,37 +43,39 @@
                 </td>
                 </tr>
             <tr>
+                 <td>
+            {% bootstrap_field form.second_name %}
+                    </td>
                 <td>
             {% bootstrap_field form.name %}
                     </td>
-                <td>
-            {% bootstrap_field form.second_name %}
-                    </td>
+
                 <td>
             {% bootstrap_field form.patronymic %}
                 </td>
                 </tr>
             <tr>
-                <td>
+                <td clospan="2">
             {% bootstrap_field form.university %}
                 </td>
-                <td colspan="2">
-            {% bootstrap_field form.problemTypes %}
-            </td>
-            </tr>
-            <tr>
-                <td >
+                 <td>
                     {% bootstrap_field form.code %}
                 </td>
+
+            </tr>
+            <tr>
+                   <td colspan="3">
+            {% bootstrap_field form.problemTypes %}
+                        *Нужно указывать только в случае, если Вы проверяющий специалист
+                   </td>
+            </tr>
+            <tr>
+
                 {% buttons %}
-                <td align="center">
-                    <button type="submit" class="btn btn-primary">
-                        Зарегистрироваться
-                    </button>
-                    </td><td>
-                    <button type="reset" class="btn">
-                        Отмена
-                    </button>
+                <td align="center" colspan="3">
+                    <input type="submit" class="btn btn-primary" value="Зарегистрироваться">
+                    <input type="reset" class="btn" value="Отмена">
+
                 </td>
                 {% endbuttons %}
             </tr>

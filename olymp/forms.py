@@ -46,12 +46,10 @@ class RegisterForm(forms.Form):
     # отчество
     patronymic = forms.CharField(widget=forms.Textarea(attrs={'rows': 1, 'cols': 20, 'placeholder': 'Иванович'}),
                                  label="Отчество")
-
     # Университет
     university = forms.ModelChoiceField(queryset=University.objects.all(), required=False, label="Университет")
-
     # Область специализации
-    problemTypes = forms.ModelChoiceField(queryset=ProblemType.objects.all(), required=False, label="Специализация")
+    problemTypes = forms.ModelMultipleChoiceField(queryset=ProblemType.objects.all(), required=False, label="Специализация*")
 
 
 class ProblemInBankForm(ModelForm):

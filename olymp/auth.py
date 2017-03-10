@@ -34,7 +34,8 @@ def register(request):
                     'login_form': LoginForm()
                 })
                 # проверяем, что пароли совпадают
-            if form.cleaned_data["code"] != "qwe123QWE":
+            if (form.cleaned_data["code"] != "qwe123QWE") and\
+                (form.cleaned_data["code"] != "st123") :
                 # выводим сообщение и перезаполняем форму
                 messages.error(request, "Неверный код доступа")
                 # перерисовываем окно
@@ -42,6 +43,15 @@ def register(request):
                     'form': RegisterForm(initial=data),
                     'login_form': LoginForm()
                 })
+            if form.cleaned_data["university"] is None:
+                # выводим сообщение и перезаполняем форму
+                messages.error(request, "Необходимо выбрать университет")
+                # перерисовываем окно
+                return render(request, "olymp/register.html", {
+                    'form': RegisterForm(initial=data),
+                    'login_form': LoginForm()
+                })
+
             else:
                 try:
                     # создаём пользователя
@@ -67,6 +77,10 @@ def register(request):
 
                 # сохраняем эксперта
                 w.save()
+                if (form.cleaned_data["code"] == "qwe123QWE"):
+                    for prt in form.cleaned_data["problemTypes"]:
+                        w.ecspertType.add(prt)
+
                 return HttpResponseRedirect("/")
         else:
             # перезагружаем страницу
