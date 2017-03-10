@@ -41,16 +41,18 @@
 </form>
 
 {% endif %}
-
-{% for link_form in problem_formset %}
 <table witdth="60%">
+{% for link_form in problem_formset %}
+
 <tr class="problem-formset">
     <td valign="top">{% bootstrap_field link_form.number %}</td>
     <td valign="top">{% bootstrap_field link_form.pInB%}</td>
 </tr>
- </table>
-{% endfor %}
 
+
+{% endfor %}
+       <div class="placeForAddBtn"></div>
+</table>
 
 {% endblock %}
 
