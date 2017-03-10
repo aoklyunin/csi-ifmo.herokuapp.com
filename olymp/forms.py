@@ -4,7 +4,7 @@ from django import forms
 from django.forms import ModelForm
 from crispy_forms.helper import FormHelper
 
-from olymp.models import University, ProblemInBank, Olymp, ProblemInOlymp
+from olymp.models import University, ProblemInBank, Olymp, ProblemInOlymp, ProblemType
 
 
 class LoginForm(forms.Form):
@@ -47,8 +47,11 @@ class RegisterForm(forms.Form):
     patronymic = forms.CharField(widget=forms.Textarea(attrs={'rows': 1, 'cols': 20, 'placeholder': 'Иванович'}),
                                  label="Отчество")
 
-    # аттестации
-    university = forms.ModelChoiceField(queryset=University.objects.all(), required=False)
+    # Университет
+    university = forms.ModelChoiceField(queryset=University.objects.all(), required=False, label="Университет")
+
+    # Область специализации
+    problemTypes = forms.ModelChoiceField(queryset=ProblemType.objects.all(), required=False, label="Специализация")
 
 
 class ProblemInBankForm(ModelForm):
@@ -140,6 +143,7 @@ class ProblemInOlympForm(ModelForm):
         super(ProblemInOlympForm, self).__init__(*args, **kwargs)
         # there's a `fields` property now
         self.helper = FormHelper()
+        self.fields["number"].required = False
         self.fields["pInB"].required = False
 
         self.helper.layout = Layout(

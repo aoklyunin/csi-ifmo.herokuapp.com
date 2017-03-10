@@ -21,27 +21,61 @@
     <form method="post" action="." class="register_form">
             {% csrf_token %}
             <br><br>
+        <table>
+            <tr>
+            <td>
             {% bootstrap_field form.username %}
+                </td>
+            <td>
             {% bootstrap_field form.password %}
+                </td>
+            <td>
             {% bootstrap_field form.rep_password %}
-
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
             {% bootstrap_field form.mail %}
+                </td>
+                </tr>
+            <tr>
+                <td>
             {% bootstrap_field form.name %}
+                    </td>
+                <td>
             {% bootstrap_field form.second_name %}
-
+                    </td>
+                <td>
             {% bootstrap_field form.patronymic %}
+                </td>
+                </tr>
+            <tr>
+                <td>
             {% bootstrap_field form.university %}
-            {% bootstrap_field form.code %}
-
-            <div align="center">
+                </td>
+                <td colspan="2">
+            {% bootstrap_field form.problemTypes %}
+            </td>
+            </tr>
+            <tr>
+                <td >
+                    {% bootstrap_field form.code %}
+                </td>
                 {% buttons %}
+                <td align="center">
                     <button type="submit" class="btn btn-primary">
                         Зарегистрироваться
                     </button>
+                    </td><td>
                     <button type="reset" class="btn">
                         Отмена
                     </button>
+                </td>
                 {% endbuttons %}
+            </tr>
+    </table>
+            <div align="center">
+
             </div>
         </form>
 {% endblock %}

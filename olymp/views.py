@@ -50,15 +50,13 @@ def olympDetail(request, olymp_id):
         eq.addFromFormset(problem_formset, True)
 
         # строим форму на основе запроса
-        form = ProblemFormset(request.POST, prefix='main_form')
+        form = OlympForm(request.POST, prefix='main_form')
         # если форма заполнена корректно
         if form.is_valid():
             d = subdict(form, ("name", "date"))
             Olymp.objects.filter(pk=olymp_id).update(**d)
 
         return HttpResponseRedirect('/olymp/list/')
-
-    print(ProblemFormset(initial=eq.generateDataFromProblemStructs()))
 
     c = {'problem_formset': ProblemFormset(initial=eq.generateDataFromProblemStructs(), prefix='problem'),
          'login_form': LoginForm(),

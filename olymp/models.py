@@ -60,15 +60,21 @@ class ProblemInBank(models.Model):
     prType = models.ForeignKey(ProblemType)
 
     def __str__(self):
-        return self.text
+        return self.name + " (" + self.text[:40] + "...)"
 
     def __unicode__(self):
-        return self.text
+        return self.name + " (" + self.text[:40] + "...)"
 
 
 class ProblemInOlymp(models.Model):
     number = models.IntegerField(default=1)
     pInB = models.ForeignKey(ProblemInBank)
+
+    def __str__(self):
+        return str(self.number) + ". " + str(self.pInB)
+
+    def __unicode__(self):
+        return str(self.number) + ". " + str(self.pInB)
 
 
 class Mark(models.Model):
@@ -76,10 +82,10 @@ class Mark(models.Model):
     author = models.ForeignKey(Man)
 
     def __str__(self):
-        return str(self.val) + "(" + self.author + ")"
+        return str(self.val) + "(" + str(self.author) + ")"
 
     def __unicode__(self):
-        return str(self.val) + "(" + self.author + ")"
+        return str(self.val) + "(" + str(self.author) + ")"
 
 
 class ProblemInOlympWithMark(models.Model):
@@ -110,12 +116,15 @@ class Olymp(models.Model):
                 pr.delete()
             self.problems.clear()
         if formset.is_valid():
+            i = 1
+
             for form in formset.forms:
-                pr = ProblemInBank.objects.create(number=form.cleaned_data["number"],
-                                                  pInB=form.cleaned_data["pInB"],
-                                                  )
-                pr.save()
-                self.problems.add(pr)
+                if (form.cleaned_data["pInB"] is not None):
+                    pr = ProblemInOlymp.objects.create(number=i,
+                                                       pInB=form.cleaned_data["pInB"])
+                    pr.save()
+                    i += 1
+                    self.problems.add(pr)
 
     def generateDataFromProblemStructs(self):
         arr = []
