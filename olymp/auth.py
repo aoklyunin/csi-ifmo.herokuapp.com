@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
 from olymp.forms import RegisterForm, LoginForm
-from olymp.models import Expert
+from olymp.models import Man
 
 
 def register(request):
@@ -62,8 +62,8 @@ def register(request):
                 user.save()
 
                 # создаём студента
-                w = Expert.objects.create(user=user, patronymic=form.cleaned_data["patronymic"],
-                                          university=form.cleaned_data["university"])
+                w = Man.objects.create(user=user, patronymic=form.cleaned_data["patronymic"],
+                                       university=form.cleaned_data["university"])
 
                 # сохраняем эксперта
                 w.save()

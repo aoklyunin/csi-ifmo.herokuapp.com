@@ -58,6 +58,8 @@ def olympDetail(request, olymp_id):
 
         return HttpResponseRedirect('/olymp/list/')
 
+    print(ProblemFormset(initial=eq.generateDataFromProblemStructs()))
+
     c = {'problem_formset': ProblemFormset(initial=eq.generateDataFromProblemStructs(), prefix='problem'),
          'login_form': LoginForm(),
          'one': '1',

@@ -2,16 +2,15 @@
 {% load staticfiles %}
 {# Load the tag library #}
 {% load bootstrap3 %}
-
+{% load crispy_forms_tags %}
+{% load crispy_forms_tags %}
 {# Load CSS and JavaScript #}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
-
-{# Display django.contrib.messages as Bootstrap alerts #}
 {% bootstrap_messages %}
 
 
-{% block title %}НПО Поиск{% endblock %}
+{% block title %}Редактирование задачи{% endblock %}
 
 {% block content %}
 <h1>Редактировать Олимпиаду</h1>
@@ -43,12 +42,13 @@
 
 {% endif %}
 
-{% for link_form in equipment_formset %}
+{% for link_form in problem_formset %}
+<table witdth="60%">
 <tr class="problem-formset">
     <td valign="top">{% bootstrap_field link_form.number %}</td>
     <td valign="top">{% bootstrap_field link_form.pInB%}</td>
 </tr>
-
+ </table>
 {% endfor %}
 
 

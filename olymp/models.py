@@ -24,12 +24,14 @@ class University(models.Model):
         return self.short
 
 
-class Expert(models.Model):
+class Man(models.Model):
     user = models.OneToOneField(User)
     # отчество
     patronymic = models.CharField(max_length=200)
     # университет
     university = models.ForeignKey(University)
+    # экспертом чего является
+    ecspertType = models.ManyToManyField(ProblemType, blank=True, default=None)
 
     def __str__(self):
         return str(self.user) + "(" + str(self.university) + ")"
@@ -70,7 +72,7 @@ class ProblemInOlymp(models.Model):
 
 class Mark(models.Model):
     val = models.FloatField(default=0.0)
-    author = models.ForeignKey(Expert)
+    author = models.ForeignKey(Man)
 
     def __str__(self):
         return str(self.val) + "(" + self.author + ")"
