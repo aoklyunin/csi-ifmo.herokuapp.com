@@ -47,13 +47,14 @@
 
         <div class="navbar-collapse collapse" id="main-menu">
             <ul class="nav navbar-nav">
+
                  <li><a href="/olymp/list/" class="btn">Олимпиады</a></li>
+                 {% if request.user.is_staff %}
                  <li><a href="/problem/list/" class="btn">Задания</a></li>
-                {% if user.is_authenticated == False %}
-
-                {% else %}
-
                 {% endif %}
+                {% ifnotequal isSpec 0%}
+                 <li><a href="/works/list/" class="btn">Работы</a></li>
+               {% endifnotequal %}
             </ul>
 
             <ul class="nav navbar-nav navbar-right">

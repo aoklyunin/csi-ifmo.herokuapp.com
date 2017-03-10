@@ -41,19 +41,6 @@ class Man(models.Model):
         return str(self.user) + "(" + str(self.university) + ")"
 
 
-class Student(models.Model):
-    firstName = models.CharField(default="", max_length=200)
-    secondName = models.CharField(default="", max_length=200)
-    surName = models.CharField(default="", max_length=200)
-    university = models.ForeignKey(University)
-
-    def __str__(self):
-        return self.secondName + " " + self.firstName + "(" + str(self.university) + ")"
-
-    def __unicode__(self):
-        return self.secondName + " " + self.firstName + "(" + str(self.university) + ")"
-
-
 class ProblemInBank(models.Model):
     name = models.CharField(default="", max_length=200)
     text = models.CharField(default="", max_length=20000)

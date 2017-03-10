@@ -6,8 +6,15 @@ from django.shortcuts import render
 
 # Create your views here.
 from olymp.forms import OlympForm, LoginForm, ProblemInBankForm, ProblemInOlympForm
-from olymp.models import Olymp, ProblemInBank
+from olymp.models import Olymp, ProblemInBank, Man
 
+
+def getSpec(request):
+    if not request.user.is_authenticated:
+        return 0
+    if request.user.is_stuff:
+        return 1
+    return len(Man.objects.get(user=request.user).ecspertType.all())
 
 def subdict(form, keyset):
     return dict((k, form.cleaned_data[k]) for k in keyset)
@@ -37,7 +44,12 @@ def olympList(request):
         'login_form': LoginForm(),
         'eqs': arr,
         'form': OlympForm(),
+        'isSpec': getSpec(request)
     })
+
+
+def participateOlymp(request, olymp_id):
+    return HttpResponseRedirect('/olymp/list/')
 
 
 def olympDetail(request, olymp_id):
@@ -62,6 +74,7 @@ def olympDetail(request, olymp_id):
          'login_form': LoginForm(),
          'one': '1',
          'form': OlympForm(instance=eq, prefix="main_form"),
+         'isSpec': getSpec(request),
          }
 
     return render(request, "olymp/olympDetail.html", c)
@@ -91,6 +104,7 @@ def problemList(request):
         'login_form': LoginForm(),
         'eqs': arr,
         'form': ProblemInBankForm(),
+        'isSpec': getSpec(request),
     })
 
 
@@ -100,13 +114,14 @@ def problemDetail(request, problem_id):
         form = ProblemInBankForm(request.POST, prefix='main_form')
         # если форма заполнена корректно
         if form.is_valid():
-            d = subdict(form, ("name", "prType","text"))
+            d = subdict(form, ("name", "prType", "text"))
             ProblemInBank.objects.filter(pk=problem_id).update(**d)
 
         return HttpResponseRedirect('/problem/list/')
 
     c = {'login_form': LoginForm(),
          'form': ProblemInBankForm(instance=ProblemInBank.objects.get(pk=problem_id), prefix="main_form"),
+         'isSpec':  getSpec(request),
          }
 
     return render(request, "olymp/problemDetail.html", c)
@@ -116,4 +131,3 @@ def problemDelete(request, problem_id):
     eq = ProblemInBank.objects.get(pk=problem_id)
     eq.delete()
     return HttpResponseRedirect('/problem/list/')
-

@@ -17,6 +17,7 @@ urlpatterns = [
     # регистрация на сайте
     url(r'^register/$', olymp.auth.register),
     url(r'^olymp/list/$', olymp.views.olympList),
+    url(r'^olymp/participate/$', olymp.views.participateOlymp),
     url(r'^olymp/detail/(?P<olymp_id>[0-9]+)/$', olymp.views.olympDetail),
     url(r'^problem/list/$', olymp.views.problemList),
     url(r'^problem/detail/(?P<problem_id>[0-9]+)/$', olymp.views.problemDetail),
