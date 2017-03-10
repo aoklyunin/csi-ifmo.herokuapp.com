@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 
+import django
 from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from django.db import models
@@ -94,7 +95,7 @@ class ProblemInOlympWithMark(models.Model):
 
 class Olymp(models.Model):
     name = models.CharField(default="", max_length=200)
-    date = models.DateField(default=datetime.datetime.today())
+    date = models.DateField(default=django.utils.timezone.now)
     problems = models.ManyToManyField(ProblemInOlymp, blank=True, default=None)
 
     def __str__(self):
