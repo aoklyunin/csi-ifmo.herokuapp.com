@@ -13,19 +13,19 @@
 {% block title %}Список задач{% endblock %}
 
 {% block content %}
-   <h1>Задачи</h1>
-    {% if user.is_staff %}
+   <h1>Работы</h1>
+    {% if isSpec>1 %}
 
     {% else %}
-        <p>Этот раздел доступен только администраторам</p>
+        <p>Этот раздел доступен только администраторам и специалистам</p>
     {% endif %}
+
 {% endblock %}
 
 
 {% block sub_content %}
 
-{% if user.is_staff %}
-
+{% if isSpec>1 %}
 <br>
 <br>
 <form method="post">
