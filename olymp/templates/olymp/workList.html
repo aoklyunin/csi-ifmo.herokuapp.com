@@ -25,41 +25,10 @@
 
 {% block sub_content %}
 
-{% if isSpec>1 %}
-<br>
-<br>
-<form method="post">
+{% if isSpec>0 %}
+
      {% csrf_token %}
-    <h3>Добавление задачи</h3>
-<table>
-
-        <td> {%  bootstrap_field form.name %}</td>
-        <td> {%  bootstrap_field form.prType %}</td>
-    </tr>
-</table>
-
-    <input align="center" class="btn btn-primary" type="submit" value="Добавить" class="button"/>
-</form>
-
-<br>
-<br>
-<table cellpadding="10" align="center" width="60%">
-  {% for eq in eqs%}
-
-    <tr>
-        <td><b>{{ eq.name}}</b></td>
-        <td>{{eq.prType}}</td>
-        <td><a href="/problem/detail/{{ eq.id }}/" class="btn btn-default">Редактировать</a>
-         <a href="/problem/delete/{{ eq.id }}/" class="btn btn-danger">Удалить</a></td>
-    </tr>
-    <tr>
-        <td colspan="3"><i>{{ eq.text}}</i></td>
-    </tr>
-    <tr>
-        <td><br></td>
-    </tr>
-    {% endfor %}
-</table>
+    <h3>Список работ</h3>
  {% else %}
     {% endif %}
 
