@@ -1,0 +1,52 @@
+{% extends "olymp/base.html" %}
+{# Load the tag library #}
+{% load bootstrap3 %}
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+
+{% load crispy_forms_tags %}
+
+
+{% block title %}Редактировать задачу{% endblock %}
+
+{% block content %}
+   <h1>Редактировать задачу</h1>
+    {% if user.is_staff %}
+
+    {% else %}
+        <p>Этот раздел доступен только администраторам</p>
+    {% endif %}
+{% endblock %}
+
+
+{% block sub_content %}
+
+{% if user.is_staff %}
+
+
+<br>
+<br>
+
+<form method="post" enctype="multipart/form-data">
+     {% csrf_token %}
+<table witdth="40%" align=center">
+    <tr>
+        <td> {%  bootstrap_field lform.workIds  %}</td>
+        <tr>
+    </tr>
+        <td> {%  bootstrap_field lform.scan  %}</td>
+    </tr>
+</table>
+    <input align="center" class="btn btn-primary" type="submit" value="Загрузить" class="button"/>
+</form>
+
+    {% else %}
+
+   {% endif %}
+
+{% endblock %}

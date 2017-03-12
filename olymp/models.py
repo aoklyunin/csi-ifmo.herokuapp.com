@@ -143,13 +143,21 @@ class Olymp(models.Model):
         return arr
 
 
-fs = FileSystemStorage(location='/media/photos')
+class CMSFileField(models.FileField):
+    def pre_save(self, model_instance, add):
+
+        file = super(models.FileField, self).pre_save(model_instance, add)
+
+        if file and not file._committed:
+            # Commit the file to storage prior to saving the model
+            file.save('%s.pdf' % model_instance.pk, file, save=False)
+        return file
 
 
 class Work(models.Model):
     olymp = models.ForeignKey(Olymp, blank=True, default=None)
     problems = models.ManyToManyField(ProblemInOlympWithMark, blank=True, default=None)
-    scan = models.FileField(storage=fs, blank=True, default=None)
+    scan = CMSFileField(upload_to='./works/', blank=True, default=None)
     student = models.ForeignKey(Man, blank=True, default=None)
 
     def __str__(self):

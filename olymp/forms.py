@@ -4,7 +4,7 @@ from django import forms
 from django.forms import ModelForm
 from crispy_forms.helper import FormHelper
 
-from olymp.models import University, ProblemInBank, Olymp, ProblemInOlymp, ProblemType
+from olymp.models import University, ProblemInBank, Olymp, ProblemInOlymp, ProblemType, Work
 
 
 class LoginForm(forms.Form):
@@ -49,7 +49,8 @@ class RegisterForm(forms.Form):
     # Университет
     university = forms.ModelChoiceField(queryset=University.objects.all(), required=False, label="Университет")
     # Область специализации
-    problemTypes = forms.ModelMultipleChoiceField(queryset=ProblemType.objects.all(), required=False, label="Специализация*")
+    problemTypes = forms.ModelMultipleChoiceField(queryset=ProblemType.objects.all(), required=False,
+                                                  label="Специализация*")
 
 
 class ProblemInBankForm(ModelForm):
@@ -117,7 +118,6 @@ class OlympForm(ModelForm):
             Field('date', css_class='col-sm-2'))
 
 
-
 class ProblemInOlympForm(ModelForm):
     class Meta:
         model = ProblemInOlymp
@@ -148,3 +148,20 @@ class ProblemInOlympForm(ModelForm):
             Field('pInB', css_class='col-sm-8', ),
             Field('number', css_class='col-sm-2'))
 
+
+# форма загрузки раоты
+class WorkLoadForm(forms.Form):
+    scan = forms.FileField(label="Скан работы")
+
+    def __init__(self, *args, **kwargs):
+        super(WorkLoadForm, self).__init__(*args, **kwargs)
+        arr = []
+        i=1
+        for w in Work.objects.all().exclude(scan=""):
+            print(w.scan)
+        for w in Work.objects.filter(scan=""):
+            arr.append([str(i), str(w.pk)])
+            i+=1
+        self.fields['workIds'] = forms.ChoiceField(
+            choices=arr, label="ID работы"
+        )

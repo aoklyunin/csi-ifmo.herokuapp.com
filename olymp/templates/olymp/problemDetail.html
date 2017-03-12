@@ -16,19 +16,18 @@
 
 {% block content %}
    <h1>Редактировать задачу</h1>
-    {% if user.is_authenticated == False %}
-        <p>Для доступа к системе Вам надо войти или зарегистрироваться</p>
-    {% else %}
+    {% if user.is_staff %}
 
+    {% else %}
+        <p>Этот раздел доступен только администраторам</p>
     {% endif %}
 {% endblock %}
 
 
 {% block sub_content %}
 
-{% if user.is_authenticated == False %}
+{% if user.is_staff %}
 
-    {% else %}
 
 <br>
 <br>
@@ -45,6 +44,8 @@
 </table>
     <input align="center" class="btn btn-primary" type="submit" value="Сохранить" class="button"/>
 </form>
+
+    {% else %}
 
    {% endif %}
 

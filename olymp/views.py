@@ -3,11 +3,12 @@ import datetime
 
 import math
 from django.forms import formset_factory
+from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
 # Create your views here.
-from olymp.forms import OlympForm, LoginForm, ProblemInBankForm, ProblemInOlympForm
+from olymp.forms import OlympForm, LoginForm, ProblemInBankForm, ProblemInOlympForm, WorkLoadForm
 from olymp.models import Olymp, ProblemInBank, Man, Work
 
 
@@ -62,11 +63,14 @@ def olympList(request):
 
 def participateOlymp(request, olymp_id):
     o = Olymp.objects.get(pk=olymp_id)
-    man = Man.objects.get(user=request.user)
-    w = Work.objects.create(olymp=o, student=man)
-    w.save()
-    w.fillOlymp()
-
+    try:
+        man = Man.objects.get(user=request.user)
+        if len(Work.objects.filter(olymp=o, student=man)) == 0:
+            w = Work.objects.create(olymp=o, student=man)
+            w.save()
+            w.fillOlymp()
+    except:
+        print("cen not find man by user to participate olymp")
     return HttpResponseRedirect('/olymp/list/')
 
 
@@ -151,12 +155,58 @@ def problemDelete(request, problem_id):
     return HttpResponseRedirect('/problem/list/')
 
 
-def workList():
-    return None
+def workList(request):
+    if request.method == 'POST':
+        # строим форму на основе запроса
+        form = ProblemInBankForm(request.POST)
+        # если форма заполнена корректно
+        if form.is_valid():
+            d = subdict(form, ("name", "prType"))
+            pr = ProblemInBank.objects.create(**d)
+            pr.save()
+            return HttpResponseRedirect('/problem/detail/' + str(pr.pk) + '/')
+
+    arr = []
+    for l in ProblemInBank.objects.all():
+        arr.append({
+            "name": l.name,
+            "prType": l.prType,
+            "id": l.pk,
+            "text": l.text[:100] + "..."
+        })
+
+    return render(request, "olymp/problemList.html", {
+        'login_form': LoginForm(),
+        'eqs': arr,
+        'form': ProblemInBankForm(),
+        'isSpec': getSpec(request),
+    })
 
 
-def loadWork():
-    return None
+def loadWork(request):
+    if request.method == 'POST':
+        # строим форму на основе запроса
+        form = WorkLoadForm(request.POST, request.FILES)
+        # если форма заполнена корректно
+        if form.is_valid():
+            try:
+                w = Work.objects.get(pk=int(form.cleaned_data["workIds"]))
+                w.scan = request.FILES['scan']
+                w.save()
+                print(w)
+            except:
+                print("can not find work with current id")
+
+            return HttpResponseRedirect('/work/list/')
+    else:
+        form = WorkLoadForm()
+
+    c = {'login_form': LoginForm(),
+         'isSpec': getSpec(request),
+         'lform': form
+         }
+
+    return render(request, "olymp/workLoad.html", c)
 
 
 def resultOlymp(request, olymp_id):
@@ -176,3 +226,14 @@ def resultOlymp(request, olymp_id):
         'isSpec': getSpec(request),
     }
     return render(request, "olymp/olympResult.html", c)
+
+
+def getWorkScan(request, work_id):
+    if getSpec(request) > 0:
+        work = Work.objects.get(pk=work_id)
+        filename = work.scan.name.split('/')[-1]
+        response = HttpResponse(work.scan, content_type='text/plain')
+        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+        return response
+    else:
+        return HttpResponseRedirect('/')

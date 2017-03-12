@@ -1,0 +1,69 @@
+{% extends "olymp/base.html" %}
+{# Load the tag library #}
+{% load bootstrap3 %}
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+
+
+{% block title %}Список задач{% endblock %}
+
+{% block content %}
+   <h1>Задачи</h1>
+    {% if user.is_staff %}
+
+    {% else %}
+        <p>Этот раздел доступен только администраторам</p>
+    {% endif %}
+{% endblock %}
+
+
+{% block sub_content %}
+
+{% if user.is_staff %}
+
+<br>
+<br>
+<form method="post">
+     {% csrf_token %}
+    <h3>Добавление задачи</h3>
+<table>
+
+        <td> {%  bootstrap_field form.name %}</td>
+        <td> {%  bootstrap_field form.prType %}</td>
+    </tr>
+</table>
+
+    <input align="center" class="btn btn-primary" type="submit" value="Добавить" class="button"/>
+</form>
+
+<br>
+<br>
+<table cellpadding="10" align="center" width="60%">
+  {% for eq in eqs%}
+
+    <tr>
+        <td><b>{{ eq.name}}</b></td>
+        <td>{{eq.prType}}</td>
+        <td><a href="/problem/detail/{{ eq.id }}/" class="btn btn-default">Редактировать</a>
+         <a href="/problem/delete/{{ eq.id }}/" class="btn btn-danger">Удалить</a></td>
+    </tr>
+    <tr>
+        <td colspan="3"><i>{{ eq.text}}</i></td>
+    </tr>
+    <tr>
+        <td><br></td>
+    </tr>
+    {% endfor %}
+</table>
+ {% else %}
+    {% endif %}
+
+
+{% endblock %}
+
+

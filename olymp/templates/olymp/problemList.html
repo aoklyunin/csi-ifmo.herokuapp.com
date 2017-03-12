@@ -14,19 +14,17 @@
 
 {% block content %}
    <h1>Задачи</h1>
-    {% if user.is_authenticated == False %}
-        <p>Для доступа к системе Вам надо войти или зарегистрироваться</p>
-    {% else %}
+    {% if user.is_staff %}
 
+    {% else %}
+        <p>Этот раздел доступен только администраторам</p>
     {% endif %}
 {% endblock %}
 
 
 {% block sub_content %}
 
-{% if user.is_authenticated == False %}
-
-    {% else %}
+{% if user.is_staff %}
 
 <br>
 <br>
@@ -62,7 +60,7 @@
     </tr>
     {% endfor %}
 </table>
-
+ {% else %}
     {% endif %}
 
 
