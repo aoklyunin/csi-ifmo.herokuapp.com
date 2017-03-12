@@ -13,7 +13,7 @@
 {% block title %}Список олимпиад{% endblock %}
 
 {% block content %}
-   <h1>Олимпиады</h1>
+   <h1>Результат Олимпиады</h1>
     {% if user.is_authenticated == False %}
         <p>Для доступа к системе Вам надо войти или зарегистрироваться</p>
     {% else %}
@@ -25,20 +25,12 @@
 {% block sub_content %}
 
 
-<br>
-<br>
-<form method="post">
-     {% csrf_token %}
-     <h3>Добавление Олимпиады</h3>
-<table>
+{% if flgChecked %}
 
-    <tr>
-        <td> {%  bootstrap_field form.name %}</td>
-    </tr>
-</table>
+{% else %}
+    <H3> Пока что Ваша работа не проверена </H3>
+{% endif %}
 
-    <input align="center" class="btn btn-primary" type="submit" value="Добавить" class="button"/>
-</form>
 
 <table cellpadding="10" align="center" width="60%">
   {% for eq in eqs%}
@@ -48,7 +40,6 @@
             <td><a href="/olymp/detail/{{ eq.id }}/" class="btn btn-default">Редактировать</a>
         {%else%}
             {% if eq.isParticipated %}
-                  <td><a href="/olymp/result/{{ eq.id }}/" class="btn btn-primary">Результат</a>
             {%else%}
                 <td><a href="/olymp/participate/{{ eq.id }}/" class="btn btn-default">Участвовать</a>
             {% endif %}

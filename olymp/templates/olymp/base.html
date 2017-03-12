@@ -47,14 +47,16 @@
 
         <div class="navbar-collapse collapse" id="main-menu">
             <ul class="nav navbar-nav">
-
-                 <li><a href="/olymp/list/" class="btn">Олимпиады</a></li>
-                 {% if request.user.is_staff %}
-                 <li><a href="/problem/list/" class="btn">Задания</a></li>
-                {% endif %}
-                {% ifnotequal isSpec 0%}
-                 <li><a href="/works/list/" class="btn">Работы</a></li>
-               {% endifnotequal %}
+                {% if user.is_authenticated%}
+                    <li><a href="/olymp/list/" class="btn">Олимпиады</a></li>
+                    {% if request.user.is_staff %}
+                        <li><a href="/problem/list/" class="btn">Задания</a></li>
+                    {% endif %}
+                    {% ifnotequal isSpec 0%}
+                        <li><a href="/work/list/" class="btn">Работы</a></li>
+                        <li><a href="/work/load/" class="btn">Загрузить</a></li>
+                    {% endifnotequal %}
+                {%endif%}
             </ul>
 
             <ul class="nav navbar-nav navbar-right">

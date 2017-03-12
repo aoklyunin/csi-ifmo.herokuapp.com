@@ -8,6 +8,7 @@ from django.shortcuts import render
 
 from olymp.forms import RegisterForm, LoginForm
 from olymp.models import Man
+from olymp.views import getSpec
 
 
 def register(request):
@@ -34,8 +35,8 @@ def register(request):
                     'login_form': LoginForm()
                 })
                 # проверяем, что пароли совпадают
-            if (form.cleaned_data["code"] != "qwe123QWE") and\
-                (form.cleaned_data["code"] != "st123") :
+            if (form.cleaned_data["code"] != "qwe123QWE") and \
+                    (form.cleaned_data["code"] != "st123"):
                 # выводим сообщение и перезаполняем форму
                 messages.error(request, "Неверный код доступа")
                 # перерисовываем окно
@@ -119,8 +120,10 @@ def index(request):
             else:
                 messages.error(request, "пара логин-пароль не найдена")
     template = 'olymp/index.html'
+    print( getSpec(request))
     context = {
         "user": request.user,
         "login_form": LoginForm(),
+        'isSpec': getSpec(request),
     }
     return render(request, template, context)

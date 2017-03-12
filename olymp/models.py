@@ -79,6 +79,26 @@ class ProblemInOlympWithMark(models.Model):
     problem = models.ForeignKey(ProblemInOlymp)
     mark = models.ManyToManyField(Mark, blank=True, default=None)
 
+    MAX_DELTA = 0.5
+
+    def getFinalMark(self):
+        if len(self.mark.all()) == 0:
+            return -1
+        else:
+            sum = 0
+            for m in self.mark.all():
+                sum += m.val
+            return float(sum) / len(self.mark.all())
+
+    def checkReady(self):
+        if len(self.mark.all()) < 2:
+            return False
+        else:
+            if len(self.mark.all()) == 2:
+                return self.mark.first().val - self.mark.last().val < self.MAX_DELTA
+            else:
+                return True
+
     def __str__(self):
         return str(self.mark) + "(" + str(self.problem) + ")"
 
@@ -127,12 +147,34 @@ fs = FileSystemStorage(location='/media/photos')
 
 
 class Work(models.Model):
-    olymp = models.ForeignKey(Olymp)
-    problems = models.ManyToManyField(ProblemInOlympWithMark)
-    scan = models.FileField(storage=fs)
+    olymp = models.ForeignKey(Olymp, blank=True, default=None)
+    problems = models.ManyToManyField(ProblemInOlympWithMark, blank=True, default=None)
+    scan = models.FileField(storage=fs, blank=True, default=None)
+    student = models.ForeignKey(Man, blank=True, default=None)
 
     def __str__(self):
         return "(" + str(self.olymp) + ")"
 
     def __unicode__(self):
         return "(" + str(self.olymp) + ")"
+
+    def getMarks(self):
+        arr = []
+        for p in self.problems.all():
+            if p.getFinalMark() == -1:
+                return []
+            else:
+                arr.append([p.getFinalMark, p.problem.number])
+        return arr
+
+    def fillOlymp(self):
+        for p in self.olymp.problems.all():
+            pwm = ProblemInOlympWithMark.objects.create(problem=p)
+            pwm.save()
+            self.problems.add(pwm)
+
+    def checkReady(self):
+        for p in self.problems.all():
+            if not p.checkReady():
+                return False
+        return True

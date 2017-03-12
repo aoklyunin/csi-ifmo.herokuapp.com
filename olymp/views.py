@@ -1,20 +1,31 @@
 # -*- coding: utf-8 -*-
 import datetime
+
+import math
 from django.forms import formset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
 # Create your views here.
 from olymp.forms import OlympForm, LoginForm, ProblemInBankForm, ProblemInOlympForm
-from olymp.models import Olymp, ProblemInBank, Man
+from olymp.models import Olymp, ProblemInBank, Man, Work
+
+
+def sign(x):
+    if x > 0:
+        return 1
+    elif x < 0:
+        return -1
+    return 0
 
 
 def getSpec(request):
     if not request.user.is_authenticated:
         return 0
-    if request.user.is_stuff:
-        return 1
-    return len(Man.objects.get(user=request.user).ecspertType.all())
+    if request.user.is_superuser:
+        return 2
+    return sign(len(list((Man.objects.get(user=request.user).ecspertType.all()))))
+
 
 def subdict(form, keyset):
     return dict((k, form.cleaned_data[k]) for k in keyset)
@@ -37,7 +48,8 @@ def olympList(request):
         arr.append({
             "name": l.name,
             "date": l.date,
-            "id": l.pk
+            "id": l.pk,
+            "isParticipated": Work.objects.filter(student=Man.objects.get(user=request.user), olymp=l)
         })
 
     return render(request, "olymp/olympList.html", {
@@ -49,6 +61,12 @@ def olympList(request):
 
 
 def participateOlymp(request, olymp_id):
+    o = Olymp.objects.get(pk=olymp_id)
+    man = Man.objects.get(user=request.user)
+    w = Work.objects.create(olymp=o, student=man)
+    w.save()
+    w.fillOlymp()
+
     return HttpResponseRedirect('/olymp/list/')
 
 
@@ -121,7 +139,7 @@ def problemDetail(request, problem_id):
 
     c = {'login_form': LoginForm(),
          'form': ProblemInBankForm(instance=ProblemInBank.objects.get(pk=problem_id), prefix="main_form"),
-         'isSpec':  getSpec(request),
+         'isSpec': getSpec(request),
          }
 
     return render(request, "olymp/problemDetail.html", c)
@@ -131,3 +149,30 @@ def problemDelete(request, problem_id):
     eq = ProblemInBank.objects.get(pk=problem_id)
     eq.delete()
     return HttpResponseRedirect('/problem/list/')
+
+
+def workList():
+    return None
+
+
+def loadWork():
+    return None
+
+
+def resultOlymp(request, olymp_id):
+    eq = Olymp.objects.get(pk=olymp_id)
+    if len(Work.objects.filter(student=Man.objects.get(user=request.user), olymp=eq)) > 0:
+        flg = True
+        work = Work.objects.get(student=Man.objects.get(user=request.user), olymp=eq)
+        marks = work.getMarks()
+    else:
+        flg = False
+        marks = []
+
+    c = {
+        'flg': flg,
+        'marks': marks,
+        'flgChecked': work.checkReady(),
+        'isSpec': getSpec(request),
+    }
+    return render(request, "olymp/olympResult.html", c)
