@@ -24,9 +24,9 @@
 
 {% block sub_content %}
 
+    {% if isSpec > 0 %}
 
-<br>
-<br>
+
 <form method="post">
      {% csrf_token %}
      <h3>Добавление Олимпиады</h3>
@@ -35,16 +35,17 @@
     <tr>
         <td> {%  bootstrap_field form.name %}</td>
     </tr>
+
 </table>
 
     <input align="center" class="btn btn-primary" type="submit" value="Добавить" class="button"/>
 </form>
-
+     {%endif%}
 <table cellpadding="10" align="center" width="60%">
   {% for eq in eqs%}
     <tr>
         <td>{{ eq.name}}</td>
-        {% if user.is_staff %}
+        {% if isSpec > 0 %}
             <td><a href="/olymp/detail/{{ eq.id }}/" class="btn btn-default">Редактировать</a>
         {%else%}
             {% if eq.isParticipated %}

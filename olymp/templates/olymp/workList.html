@@ -10,29 +10,36 @@
 {% bootstrap_messages %}
 
 
-{% block title %}Список задач{% endblock %}
+{% block title %}Работы{% endblock %}
 
 {% block content %}
-   <h1>Работы</h1>
-    {% if isSpec>1 %}
+    <h1>Работы</h1>
+    {% if isSpec > 0 %}
 
     {% else %}
         <p>Этот раздел доступен только администраторам и специалистам</p>
     {% endif %}
-
 {% endblock %}
 
 
 {% block sub_content %}
 
-{% if isSpec>0 %}
+    {% if isSpec > 0 %}
 
-     {% csrf_token %}
-    <h3>Список работ</h3>
- {% else %}
+        <h3>Список работ</h3>
+        <table width="40%" align="center">
+        {% for w in arr %}
+            <tr>
+                <td>Номер работы: {{w.pk}}</td>
+                <td><a href="/work/getScan/{{w.pk}}/" class="btn btn-default">Скачать</a></td>
+
+                <td><a href="/work/vote/{{w.pk}}/" class="btn {%if w.checked %} btn-primary {%else%} btn-default {%endif %}">Оценить</a></td>
+            </tr>
+        {% endfor %}
+        </table>
+    {% else %}
+
     {% endif %}
-
-
 {% endblock %}
 
 

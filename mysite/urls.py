@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^problem/list/$', olymp.views.problemList),
     url(r'^work/list/$', olymp.views.workList),
     url(r'^work/load/$', olymp.views.loadWork),
+    url(r'^work/vote/(?P<work_id>[0-9]+)/$', olymp.views.voteWork),
     url(r'^work/getScan/(?P<work_id>[0-9]+)/$', olymp.views.getWorkScan),
     url(r'^problem/detail/(?P<problem_id>[0-9]+)/$', olymp.views.problemDetail),
     url(r'^problem/delete/(?P<problem_id>[0-9]+)/$', olymp.views.problemDelete),

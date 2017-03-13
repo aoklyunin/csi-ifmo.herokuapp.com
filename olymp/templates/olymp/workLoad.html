@@ -16,7 +16,7 @@
 
 {% block content %}
    <h1>Редактировать задачу</h1>
-    {% if user.is_staff %}
+       {% if isSpec > 0 %}
 
     {% else %}
         <p>Этот раздел доступен только администраторам</p>
@@ -26,11 +26,7 @@
 
 {% block sub_content %}
 
-{% if user.is_staff %}
-
-
-<br>
-<br>
+    {% if isSpec > 0 %}
 
 <form method="post" enctype="multipart/form-data">
      {% csrf_token %}

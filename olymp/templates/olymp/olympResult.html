@@ -27,28 +27,25 @@
 
 {% if flgChecked %}
 
+<table cellpadding="10" align="center" width="60%">
+  {% for mark in marks%}
+    <tr>
+        {% for m in mark %}
+        <td>
+            {{m}}
+        </td>
+         {% endfor %}
+     </tr>
+    {% endfor %}
+    <tr><td>Итог:</td><td> {{sum}}</td></tr>
+</table>
+
 {% else %}
     <H3> Пока что Ваша работа не проверена </H3>
 {% endif %}
 
 
-<table cellpadding="10" align="center" width="60%">
-  {% for eq in eqs%}
-    <tr>
-        <td>{{ eq.name}}</td>
-        {% if user.is_staff %}
-            <td><a href="/olymp/detail/{{ eq.id }}/" class="btn btn-default">Редактировать</a>
-        {%else%}
-            {% if eq.isParticipated %}
-            {%else%}
-                <td><a href="/olymp/participate/{{ eq.id }}/" class="btn btn-default">Участвовать</a>
-            {% endif %}
-        {%endif%}
-       </td>
-        <td></td>
-    </tr>
-    {% endfor %}
-</table>
+
 
 
 {% endblock %}

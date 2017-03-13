@@ -156,12 +156,26 @@ class WorkLoadForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(WorkLoadForm, self).__init__(*args, **kwargs)
         arr = []
-        i=1
-        for w in Work.objects.all().exclude(scan=""):
-            print(w.scan)
+        i = 1
         for w in Work.objects.filter(scan=""):
-            arr.append([str(i), str(w.pk)])
-            i+=1
+            arr.append([str(w.pk), str(w.pk)])
+            i += 1
         self.fields['workIds'] = forms.ChoiceField(
             choices=arr, label="ID работы"
         )
+
+
+class ProblemWithMarkForm(forms.Form):
+    mark = forms.FloatField(label="Оценка", required=False)
+    wId = forms.IntegerField(label="wId",required=False)
+
+    # Университет
+    def __init__(self, *args, **kwargs):
+        work = kwargs.pop('work')
+        super(ProblemWithMarkForm, self).__init__(*args, **kwargs)
+        arr = []
+        for p in work.problems.all():
+            arr.append(p.problem.pk)
+        self.fields['problem'] = forms.ModelChoiceField(queryset=ProblemInOlymp.objects.filter(pk__in=arr),
+                                                        required=False, label="Задача")
+        self.fields['wId'].widget = forms.HiddenInput()

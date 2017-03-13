@@ -79,7 +79,7 @@ class ProblemInOlympWithMark(models.Model):
     problem = models.ForeignKey(ProblemInOlymp)
     mark = models.ManyToManyField(Mark, blank=True, default=None)
 
-    MAX_DELTA = 0.5
+    MAX_DELTA = 10
 
     def getFinalMark(self):
         if len(self.mark.all()) == 0:
@@ -88,9 +88,11 @@ class ProblemInOlympWithMark(models.Model):
             sum = 0
             for m in self.mark.all():
                 sum += m.val
-            return float(sum) / len(self.mark.all())
+            res = float(float(sum) / len(self.mark.all()))
+            return res
 
     def checkReady(self):
+
         if len(self.mark.all()) < 2:
             return False
         else:
@@ -98,6 +100,12 @@ class ProblemInOlympWithMark(models.Model):
                 return self.mark.first().val - self.mark.last().val < self.MAX_DELTA
             else:
                 return True
+
+    def checkMarkByAuthor(self, man):
+        for m in self.mark.all():
+            if m.author == man:
+                return True
+        return False
 
     def __str__(self):
         return str(self.mark) + "(" + str(self.problem) + ")"
@@ -145,7 +153,6 @@ class Olymp(models.Model):
 
 class CMSFileField(models.FileField):
     def pre_save(self, model_instance, add):
-
         file = super(models.FileField, self).pre_save(model_instance, add)
 
         if file and not file._committed:
@@ -160,6 +167,26 @@ class Work(models.Model):
     scan = CMSFileField(upload_to='./works/', blank=True, default=None)
     student = models.ForeignKey(Man, blank=True, default=None)
 
+    def generateData(self, man):
+        arr = []
+        for pr in self.problems.all():
+            flg = True
+            tm = None
+            for mark in pr.mark.all():
+                if mark.author == man:
+                    tM = mark
+                    flg = False
+            if flg:
+                m = Mark.objects.create(author=man)
+                m.save()
+                tM = m
+                pr.mark.add(m)
+            arr.append({'problem': pr.problem,
+                        'mark': tM.val,
+                        'wId': self.pk,
+                        })
+        return arr
+
     def __str__(self):
         return "(" + str(self.olymp) + ")"
 
@@ -172,8 +199,18 @@ class Work(models.Model):
             if p.getFinalMark() == -1:
                 return []
             else:
-                arr.append([p.getFinalMark, p.problem.number])
+                tmp = []
+                tmp.append(p.problem.number)
+                tmp.append( p.getFinalMark())
+                arr.append(tmp)
         return arr
+
+    def getSum(self):
+        sm = 0
+        for m in self.getMarks():
+            sm += m[1]
+
+        return sm
 
     def fillOlymp(self):
         for p in self.olymp.problems.all():
@@ -185,4 +222,25 @@ class Work(models.Model):
         for p in self.problems.all():
             if not p.checkReady():
                 return False
+        return True
+
+    def addFromFormset(self, formset, man):
+        if formset.is_valid():
+            i = 1
+            for form in formset.forms:
+                if len(form.cleaned_data) > 0:
+                    p = ProblemInOlympWithMark.objects.get(problem=form.cleaned_data['problem'],
+                                                           work=Work.objects.get(pk=int(form.cleaned_data['wId'])))
+                    m = p.mark.all().filter(author=man).first()
+
+                    m.val = form.cleaned_data['mark']
+                    m.save()
+                    print(form.cleaned_data['mark'])
+
+
+    def checkMarkByAuthor(self, man):
+        for p in self.problems.all():
+            if p.checkMarkByAuthor(man):
+                return False
+
         return True

@@ -2,13 +2,16 @@
 import datetime
 
 import math
+from functools import partial
+from functools import wraps
+
 from django.forms import formset_factory
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
 # Create your views here.
-from olymp.forms import OlympForm, LoginForm, ProblemInBankForm, ProblemInOlympForm, WorkLoadForm
+from olymp.forms import OlympForm, LoginForm, ProblemInBankForm, ProblemInOlympForm, WorkLoadForm, ProblemWithMarkForm
 from olymp.models import Olymp, ProblemInBank, Man, Work
 
 
@@ -156,29 +159,18 @@ def problemDelete(request, problem_id):
 
 
 def workList(request):
-    if request.method == 'POST':
-        # строим форму на основе запроса
-        form = ProblemInBankForm(request.POST)
-        # если форма заполнена корректно
-        if form.is_valid():
-            d = subdict(form, ("name", "prType"))
-            pr = ProblemInBank.objects.create(**d)
-            pr.save()
-            return HttpResponseRedirect('/problem/detail/' + str(pr.pk) + '/')
-
     arr = []
-    for l in ProblemInBank.objects.all():
-        arr.append({
-            "name": l.name,
-            "prType": l.prType,
-            "id": l.pk,
-            "text": l.text[:100] + "..."
-        })
+    for w in Work.objects.exclude(scan=""):
+        if (not w.checkReady()):
+            arr.append({
+                "pk": w.pk,
+                "checked": w.checkMarkByAuthor(Man.objects.get(user=request.user))
 
-    return render(request, "olymp/problemList.html", {
+            })
+            print(w.checkMarkByAuthor(Man.objects.get(user=request.user)))
+    return render(request, "olymp/workList.html", {
         'login_form': LoginForm(),
-        'eqs': arr,
-        'form': ProblemInBankForm(),
+        'arr': arr,
         'isSpec': getSpec(request),
     })
 
@@ -193,11 +185,10 @@ def loadWork(request):
                 w = Work.objects.get(pk=int(form.cleaned_data["workIds"]))
                 w.scan = request.FILES['scan']
                 w.save()
-                print(w)
             except:
                 print("can not find work with current id")
 
-            return HttpResponseRedirect('/work/list/')
+        return HttpResponseRedirect('/work/load/')
     else:
         form = WorkLoadForm()
 
@@ -215,15 +206,20 @@ def resultOlymp(request, olymp_id):
         flg = True
         work = Work.objects.get(student=Man.objects.get(user=request.user), olymp=eq)
         marks = work.getMarks()
+        mSum = work.getSum()
+        flgChecked = work.checkReady()
     else:
         flg = False
         marks = []
+        mSum = 0
+        flgChecked = False
 
     c = {
         'flg': flg,
         'marks': marks,
-        'flgChecked': work.checkReady(),
+        'flgChecked': flgChecked,
         'isSpec': getSpec(request),
+        'sum': mSum,
     }
     return render(request, "olymp/olympResult.html", c)
 
@@ -237,3 +233,22 @@ def getWorkScan(request, work_id):
         return response
     else:
         return HttpResponseRedirect('/')
+
+
+def voteWork(request, work_id):
+    w = Work.objects.get(pk=work_id)
+    ProblemFormset = formset_factory(wraps(ProblemWithMarkForm)(partial(ProblemWithMarkForm, work=w)))
+
+    if request.method == 'POST':
+        problem_formset = ProblemFormset(request.POST, prefix='problem')
+        w.addFromFormset(problem_formset, Man.objects.get(user=request.user))
+    else:
+        problem_formset = ProblemFormset(initial=w.generateData(Man.objects.get(user=request.user)), prefix='problem')
+    c = {
+        'problem_formset': problem_formset,
+        'login_form': LoginForm(),
+        'one': '1',
+        'isSpec': getSpec(request),
+    }
+
+    return render(request, "olymp/workVote.html", c)
